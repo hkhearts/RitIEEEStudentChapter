@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IEEE RIT Student Branch | Computer Society</title>
+    
+    <!-- GSAP & Fonts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Color Palette */
+            --clr-primary: #1F3F2F; /* Deep Forest Green */
+            --clr-primary-hover: #142A1F; /* Darker Forest Green */
+            --clr-secondary: #D4AF37; /* Mustard */
+            --clr-bg: #F5F3ED; /* Light Beige */
+            --clr-card: #D3DAC9; /* Soft Sage */
+            --clr-text: #3E2723; /* Dark Brown */
+            --clr-border: #9D9B86; /* Muted Olive */
+            
+            /* Typography */
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--clr-bg);
+            color: var(--clr-text);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Loader Animation --- */
+        .loader {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--clr-primary); color: var(--clr-bg);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; clip-path: circle(150% at 50% 50%);
+        }
+        .loader-text {
+            font-family: var(--font-heading); font-size: 5rem; font-weight: 600;
+            letter-spacing: 5px; display: flex; align-items: baseline;
+        }
+        .mustard-dot { color: var(--clr-secondary); font-size: 6rem; line-height: 0; }
+        .loader-sub { font-size: 1rem; letter-spacing: 2px; opacity: 0.8; margin-top: 10px; }
+
+        /* --- Glassmorphism Nav --- */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem 5%; position: fixed; width: 100%; top: 0; z-index: 100;
+            background: rgba(245, 243, 237, 0.7); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(157, 155, 134, 0.2); 
+            transition: transform 0.4s ease;
+        }
+        .logo { font-family: var(--font-heading); font-weight: 600; font-size: 1.2rem; color: var(--clr-primary); }
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { color: var(--clr-text); text-decoration: none; margin-left: 2rem; font-weight: 500; transition: color 0.3s ease;}
+        .nav-links a:hover { color: var(--clr-primary); }
+        .btn-primary {
+            background-color: var(--clr-primary); color: var(--clr-bg) !important; text-decoration: none;
+            padding: 0.8rem 1.5rem; border-radius: 30px; border: none; font-family: inherit; font-size: 0.9rem; margin-left: 2rem; cursor: pointer; transition: background-color 0.3s ease; display: inline-block;
+        }
+        .btn-primary:hover { background-color: var(--clr-primary-hover); }
+
+        /* --- Hero Section --- */
+        .hero { 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 0 5%; 
+            gap: 2rem;
+        }
+        .hero-text {
+            flex: 1;
+            max-width: 600px;
+        }
+        .badge { background-color: var(--clr-secondary); color: var(--clr-primary); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin-bottom: 2rem; display: inline-block;}
+        .hero-title { font-family: var(--font-heading); font-size: clamp(3rem, 7vw, 6rem); line-height: 1.1; margin-bottom: 1.5rem; color: var(--clr-text);}
+        .hero-desc { font-size: 1.1rem; opacity: 0.9; }
+
+        /* Right-Side Landing Graphic */
+        .hero-visual {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .landing-graphic {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(31, 63, 47, 0.15);
+            animation: float 6s ease-in-out infinite;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+        .landing-graphic:hover {
+            animation-play-state: paused;
+            transform: scale(1.05) translateY(-10px) rotate(2deg);
+            box-shadow: 0 30px 50px rgba(31, 63, 47, 0.25);
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @media (max-width: 900px) {
+            .hero { flex-direction: column; justify-content: center; text-align: center; height: auto; padding: 8rem 5% 4rem; }
+            .hero-text { max-width: 100%; margin-bottom: 3rem; }
+            .hero-visual { justify-content: center; }
+            .landing-graphic { max-width: 100%; }
+        }
+
+        /* --- Reusable Section Headers --- */
+        .section-header { margin-bottom: 4rem; border-bottom: 1px solid var(--clr-border); padding-bottom: 2rem; }
+        .section-header h2 { font-family: var(--font-heading); font-size: 3rem; color: var(--clr-primary); }
+
+        /* --- Events Grid --- */
+        .events-section { padding: 5rem 5%; }
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 3rem; }
+        
+        .event-card {
+            background-color: var(--clr-card); border-radius: 12px; overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; display: flex; flex-direction: column; cursor: pointer;
+        }
+        .event-card:hover { transform: translateY(-10px); }
+        .event-images { width: 100%; height: 250px; overflow: hidden; }
+        .event-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+        .event-card:hover .event-img { transform: scale(1.05); }
+        .event-details { padding: 2rem; display: flex; flex-direction: column; flex-grow: 1;}
+        .event-date { font-size: 0.85rem; font-weight: 600; color: var(--clr-border); margin-bottom: 0.5rem; }
+        .event-type { position: absolute; top: 1rem; right: 1rem; background: var(--clr-bg); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .event-card h3 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+        .event-outcome { font-size: 0.95rem; opacity: 0.85; margin-bottom: 1.5rem; }
+
+        /* Highlighted Last Card */
+        .highlight-card { grid-column: 1 / -1; flex-direction: row; }
+        .highlight-card .event-images { width: 50%; height: auto; min-height: 300px; }
+        .highlight-card .event-details { width: 50%; justify-content: center; }
+        @media (max-width: 768px) {
+            .highlight-card { flex-direction: column; }
+            .highlight-card .event-images, .highlight-card .event-details { width: 100%; }
+        }
+
+        /* --- About Section --- */
+        .about-section { padding: 5rem 5%; background-color: var(--clr-card); }
+        .about-content { max-width: 800px; margin: 0 auto; font-size: 1.1rem; }
+        .about-content p { margin-bottom: 1.5rem; }
+        .about-content strong { color: var(--clr-primary); }
+
+        /* --- Contact Section --- */
+        .contact-section { padding: 5rem 5%; }
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; }
+        .contact-card { background: transparent; border: 1px solid var(--clr-border); padding: 2.5rem; border-radius: 12px; }
+        .contact-card h4 { font-family: var(--font-heading); font-size: 1.5rem; color: var(--clr-primary); margin-bottom: 1rem; }
+        .contact-card p { margin-bottom: 0.5rem; opacity: 0.9; }
+
+        /* --- Single Event Detail View (Overlay) --- */
+        #detail-view {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--clr-bg); z-index: 200;
+            transform: translateY(100%); 
+            overflow-y: auto; overflow-x: hidden;
+        }
+        .detail-nav {
+            position: sticky; top: 0; width: 100%; padding: 1.5rem 5%;
+            background: rgba(245, 243, 237, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 210; border-bottom: 1px solid rgba(157, 155, 134, 0.2);
+            display: flex; align-items: center;
+        }
+        .back-btn {
+            background: none; border: none; font-size: 1.1rem; font-family: inherit;
+            color: var(--clr-primary); font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer;
+        }
+
+        .detail-hero { width: 100%; height: 50vh; position: relative; overflow: hidden; }
+        .detail-hero img { width: 100%; height: 100%; object-fit: cover; }
+        .detail-hero-content {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 4rem 5% 2rem;
+            background: linear-gradient(to top, rgba(31,63,47,0.9), transparent); color: var(--clr-bg);
+        }
+        .detail-hero-content h1 { font-family: var(--font-heading); font-size: clamp(2rem, 5vw, 4rem); line-height: 1.1;}
+        
+        .detail-content { padding: 4rem 5%; max-width: 1200px; margin: 0 auto;}
+        .specs-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem; background: var(--clr-card); padding: 3rem; border-radius: 12px; margin-bottom: 4rem;
+        }
+        .spec-item h4 { color: var(--clr-border); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;}
+        .spec-item p { font-weight: 500; font-size: 1.1rem;}
+
+        .gallery-section h2 { font-family: var(--font-heading); font-size: 2.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--clr-border); padding-bottom: 1rem;}
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .gallery-grid img { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; transition: transform 0.3s; }
+        .gallery-grid img:hover { transform: scale(1.02); }
+
+        footer { background-color: var(--clr-primary); color: var(--clr-bg); text-align: center; padding: 4rem 5%; }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div class="loader">
+        <div class="loader-text">
+            <span>R</span><span>I</span><span>T</span><span class="mustard-dot">.</span>
+        </div>
+        <div class="loader-sub">IEEE Computer Society</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="main-nav">
+        <div class="logo">RIT IEEE Student</div>
+        <div class="nav-links">
+            <a href="#events">Events</a>
+            <a href="#about">About</a>
+            <a href="#contact" class="btn-primary">Join Us</a>
+        </div>
+    </nav>
+
+    <!-- Main View (Home) -->
+    <div id="main-view">
+        <header class="hero">
+            <div class="hero-text">
+                <div class="badge">Academic Year 2024-2026</div>
+                <h1 class="hero-title">Empowering<br>Innovation.</h1>
+                <p class="hero-desc">Department of Computer Science and Engineering. Explore, Engage, Excel with the IEEE Computer Society at Ramco Institute of Technology.</p>
+            </div>
+            
+            <div class="hero-visual">
+                <!-- Replace src with an appropriate visual -->
+                <img src="./pics/logo.png" alt="IEEE Logo" class="landing-graphic">
+            </div>
+        </header>
+
+        <section id="events" class="events-section scroll-fade">
+            <div class="section-header">
+                <h2>Featured Events</h2>
+                <p>Faculty Coordinator: Ms. Rajarajeswari P, AP/CSE</p>
+            </div>
+            <!-- Grid populated dynamically by JavaScript -->
+            <div class="events-grid" id="events-container"></div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section scroll-fade">
+            <div class="section-header">
+                <h2>About Us</h2>
+                <p>Innovating the Future at Ramco Institute of Technology</p>
+            </div>
+            <div class="about-content">
+                <p>The <strong>IEEE Computer Society Student Branch Chapter (STB11408)</strong> at Ramco Institute of Technology is a dynamic community of tech enthusiasts, developers, and researchers. We are dedicated to exploring cutting-edge technologies, from building custom compilers and resilient database engines to pioneering immersive WebXR experiences.</p>
+                <p>Our mission is to bridge the gap between academic learning and high-level industry demands. Through hands-on hackathons, intensive workshops, competitive programming sessions, and collaborative projects, we empower students to transform their ideas into impactful, real-world solutions.</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section scroll-fade">
+            <div class="section-header">
+                <h2>Get in Touch</h2>
+                <p>Join our community or collaborate on future initiatives.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h4>Location</h4>
+                    <p><strong>Ramco Institute of Technology</strong></p>
+                    <p>Rajapalayam - 626117</p>
+                    <p>Serving the Sivakasi and Virudhunagar Region, Tamil Nadu</p>
+                </div>
+                <div class="contact-card">
+                    <h4>Faculty Coordinator</h4>
+                    <p><strong>Ms. Rajarajeswari P, AP/CSE</strong></p>
+                    <p>Faculty Coordinator</p>
+                    <p>Department of Computer Science and Engineering</p>
+                </div>
+                <div class="contact-card">
+                    <h4>Connect</h4>
+                    <p>Stay updated on our upcoming hackathons, lecture series, and membership drives.</p>
+                    <a href="#" class="btn-primary" style="margin-left: 0; margin-top: 1rem;">Email Us</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <h2>RIT IEEE Student Branch</h2>
+            <p>Ramco Institute of Technology, Rajapalayam</p>
+        </footer>
+    </div>
+
+    <!-- Detail View Overlay (Hidden by Default) -->
+    <div id="detail-view">
+        <div class="detail-nav">
+            <button class="back-btn" onclick="closeDetail()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Events
+            </button>
+        </div>
+        <div id="detail-content-container"></div>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- Data: All Events and Images ---
+        const eventsData = [
+            {
+                id: 1, type: "Orientation Programme", date: "14.05.2025",
+                title: "IEEE Onboard 2025: Explore, Engage, Excel!",
+                target: "IEEE CS Student Members", speaker: "Dr. Arunachalaperumal C, Prof/Head, RIT ECE",
+                faculty: "Rajarajeswari P, AP/CSE", student: "-",
+                outcome: "New IEEE Student Members gained awareness about IEEE and its benefits.",
+                images: ["./pics/1/20250514_112226.jpg", "./pics/1/20250514_112234.jpg"]
+            },
+            {
+                id: 2, type: "Short Term Course", date: "06.08.2025 - 08.08.2025",
+                title: "Power BI Essentials: From Data to Dashboard",
+                target: "All UG/PG Students", speaker: "Rajarajeswari P & RIT CSE 23-27 Team",
+                faculty: "Sakthipriya G, Rajarajeswari P", student: "Navina M, Suryaprabha PJ",
+                outcome: "Forty-one students learned to use Power BI to utilize it for Data Visualization.",
+                images: ["./pics/2/WhatsApp Image 2025-12-04 at 2.12.18 PM (1).jpeg", "./pics/2/WhatsApp Image 2025-12-04 at 2.12.18 PM.jpeg", "./pics/2/20250806_151751.jpg"] 
+            },
+            {
+                id: 3, type: "Awareness Programme", date: "26.08.2025 & 28.08.2025",
+                title: "Canvassing - Student Induction Programme",
+                target: "RIT 25-29 Batch Students", speaker: "Suryaprabha PJ, Navina M, David W Joshua",
+                faculty: "Rajarajeswari P, AP/CSE", student: "Navina M, Suryaprabha PJ",
+                outcome: "IEEE Student members introduced IEEE to Freshmen students in CSE and motivated them to join.",
+                images: ["./pics/3/WhatsApp Image 2025-12-04 at 12.12.41 PM.jpeg", "./pics/3/WhatsApp Image 2025-12-04 at 12.12.44 PM.jpeg"]
+            },
+            {
+                id: 4, type: "Lecture Series", date: "Sep - Dec 2025",
+                title: "Empowering Innovation: Solving Real-World Problems",
+                target: "IEEE CS Members & 23-27 Batch", speaker: "Rajarajeswari P, AP/CSE",
+                faculty: "Rajarajeswari P, AP/CSE", student: "Darshan Sivakumar, Sameeksha A",
+                outcome: "Twenty-Eight obtained knowledge on becoming a solution expert using modern tools.",
+                images: ["./pics/4/WhatsApp Image 2025-10-12 at 1.02.15 PM.jpeg", "./pics/4/WhatsApp Image 2025-10-12 at 1.02.18 PM.jpeg", "./pics/4/WhatsApp Image 2025-12-03 at 10.58.38 AM (1).jpeg", "./pics/4/WhatsApp Image 2025-12-03 at 10.58.38 AM.jpeg", "./pics/4/WhatsApp Image 2025-12-04 at 2.37.05 PM (1).jpeg", "./pics/4/WhatsApp Image 2025-12-04 at 2.37.05 PM.jpeg"]
+            },
+            {
+                id: 5, type: "Seminar", date: "04.10.2025",
+                title: "Career Guidance: Entering Product-Based Companies",
+                target: "RIT CSE 24-28 Batch", speaker: "Rohinth R, Software Developer Engineer, Zoho",
+                faculty: "Rajarajeswari P, AP/CSE", student: "Subhiksha S, Sri Shruthika S",
+                outcome: "Students got guidance on using LeetCode and other coding platforms to master competitive coding challenges.",
+                images: ["./pics/5/WhatsApp Image 2025-10-05 at 1.28.30 PM.jpeg", "./pics/5/WhatsApp Image 2025-10-05 at 1.28.31 PM.jpeg"]
+            },
+            {
+                id: 6, type: "Tech Contest", date: "15.10.2025",
+                title: "Tech Tambola - Festive Fusion of Fun",
+                target: "All RIT CSE Students", speaker: "-",
+                faculty: "Rajarajeswari P, AP/CSE", student: "Suryaprabha PJ, David W Joshua",
+                outcome: "Celebrated Diwali with a technical twist on the game of Tambola.",
+                images: ["./pics/6/20251017_115452.jpg", "./pics/6/20251017_121325.jpg"] 
+            },
+            {
+                id: 7, type: "Tech Contest", date: "Dec 2025",
+                title: "Santa's Optimization Challenge - Kaggle HackFest",
+                target: "All RIT CSE Students", speaker: "-",
+                faculty: "Rajarajeswari P, AP/CSE", student: "Navina M, Kamatchi D",
+                outcome: "Introduced Kaggle to students, practicing efficient optimization problem solving.",
+                images: ["./pics/7/lb1.png", "./pics/7/lb2.png"]
+            },
+            {
+                id: 8, type: "Workshop", date: "08.01.2026",
+                title: "Mathematics of Kolams: A Computational Exploration",
+                target: "All RIT CSE Students", speaker: "Rajarajeswari P, AP/CSE & Suryaprabha PJ, RIT CSE 23-27",
+                faculty: "Rajarajeswari P, AP/CSE", student: "Asma M, Karthika A",
+                outcome: "Students gained knowledge on how to approach an SIH problem and learned how mathematics and Kolam were connected.",
+                images: ["./pics/8/WhatsApp Image 2026-01-08 at 6.53.31 PM.jpeg"]
+            },
+            {
+                id: 9, type: "Workshop", date: "10.01.2026",
+                title: "Resume Crafting and Fine-Tuning for a High ATS Score",
+                target: "RIT CSE 23-27 Batch Students", speaker: "Kavya V, Hariharasubramani, Sathasin, & Madhujith, RIT CSE 22-26",
+                faculty: "Rajarajeswari P, AP/CSE", student: "Jeyaseelan J & Chriswin Prayson",
+                outcome: "RIT CSE 23 - 27 (102 Students) got the insights into drafting a resume that would lead a high ATS score.",
+                images: ["./pics/9/20260110_113152.jpg"]
+            },
+            {
+                id: 10, type: "Workshop + Hackathon", date: "19.02.2026 - 21.02.2026",
+                title: "Immersive Web Futures: National Workshop & Hackathon on WebXR",
+                target: "All Degree Pursuing Students", speaker: "Rajarajeswari P, AP/CSE, Hari Krishnan C, Panimalar N, Anukeerthana M, RIT CSE 23 - 27",
+                faculty: "Rajarajeswari P, AP/CSE", student: "David W Joshua, Jeyaseelan J",
+                outcome: "Students were given exposure to WebXR and its advantages, along with instructing them on using WebXR tools, and they developed their own application for the hackathon.",
+                images: ["./pics/10/20260219_94609AMByGPSMapCamera.jpg"]
+            }
+        ];
+
+        // --- Render Main Page Cards dynamically ---
+        const container = document.getElementById('events-container');
+        eventsData.forEach(event => {
+            const isHighlight = event.id === 10 ? 'highlight-card' : '';
+
+            const cardHTML = `
+                <article class="event-card ${isHighlight}" onclick="openDetail(${event.id})">
+                    <div class="event-images">
+                        <img src="${event.images[0]}" alt="${event.title}" class="event-img" onerror="this.src='https://via.placeholder.com/600x400/C1C6A9/3E2723?text=Image+Not+Found'">
+                    </div>
+                    <div class="event-details">
+                        <span class="event-date">${event.date}</span>
+                        <span class="event-type">${event.type}</span>
+                        <h3>${event.title}</h3>
+                        <p class="event-outcome">${event.outcome}</p>
+                        ${event.student && event.student !== "-" ? `<div class="coordinator-tag" style="margin-top: auto; font-size: 0.8rem; font-weight: 500; color: var(--clr-primary); border-top: 1px solid rgba(157, 155, 134, 0.3); padding-top: 1rem;">Student Coords: ${event.student}</div>` : ''}
+                    </div>
+                </article>
+            `;
+            container.innerHTML += cardHTML;
+        });
+
+        // --- Single Page Routing & Details Builder ---
+        function openDetail(id) {
+            const event = eventsData.find(e => e.id === id);
+            if(!event) return;
+
+            let galleryHTML = '';
+            event.images.forEach(img => {
+                galleryHTML += `<img src="${img}" alt="${event.title} Gallery Image" onerror="this.src='https://via.placeholder.com/600x400/C1C6A9/3E2723?text=Image+Not+Found'">`;
+            });
+
+            document.getElementById('detail-content-container').innerHTML = `
+                <div class="detail-hero">
+                    <img src="${event.images[0]}" alt="${event.title}" onerror="this.src='https://via.placeholder.com/1200x600/C1C6A9/3E2723?text=Image+Not+Found'">
+                    <div class="detail-hero-content">
+                        <span class="badge">${event.type}</span>
+                        <h1>${event.title}</h1>
+                    </div>
+                </div>
+                <div class="detail-content">
+                    <div class="specs-grid">
+                        <div class="spec-item"><h4>Date</h4><p>${event.date}</p></div>
+                        <div class="spec-item"><h4>Target Audience</h4><p>${event.target}</p></div>
+                        <div class="spec-item"><h4>Speaker/Instructor</h4><p>${event.speaker}</p></div>
+                        <div class="spec-item"><h4>Faculty Coordinator</h4><p>${event.faculty}</p></div>
+                        <div class="spec-item"><h4>Student Coordinator</h4><p>${event.student}</p></div>
+                        <div class="spec-item"><h4>Outcome</h4><p>${event.outcome}</p></div>
+                    </div>
+                    
+                    <div class="gallery-section">
+                        <h2>Event Gallery</h2>
+                        <div class="gallery-grid">
+                            ${galleryHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('detail-view').scrollTo(0,0);
+            gsap.to('#main-nav', {y: '-100%', duration: 0.4}); 
+            gsap.to('#detail-view', { y: '0%', duration: 0.8, ease: "power4.inOut" });
+        }
+
+        function closeDetail() {
+            gsap.to('#detail-view', { y: '100%', duration: 0.8, ease: "power4.inOut" });
+            gsap.to('#main-nav', {y: '0%', duration: 0.4, delay: 0.4}); 
+        }
+
+        // --- GSAP Loading Sequence & Scroll Animations ---
+        const tl = gsap.timeline();
+        tl.fromTo(".loader-text span", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out" })
+          .fromTo(".loader-sub", { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.4")
+          .to(".loader-text span, .loader-sub", { opacity: 0, y: -15, duration: 0.5, stagger: 0.05, ease: "power2.in" }, "+=0.6")
+          .to(".loader", { clipPath: "circle(0% at 50% 50%)", duration: 1.5, ease: "expo.inOut" })
+          .set(".loader", { display: "none" })
+          
+          .fromTo(".badge", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.8")
+          .fromTo(".hero-title", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.6")
+          .fromTo(".hero-desc", { opacity: 0 }, { opacity: 1, duration: 0.8 }, "-=0.7")
+          .fromTo(".hero-visual", { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 1, ease: "power3.out" }, "-=0.8");
+
+        // Scroll animations for cards and new sections
+        setTimeout(() => {
+            gsap.utils.toArray('.event-card, .scroll-fade').forEach((element) => {
+                gsap.fromTo(element, { opacity: 0, y: 50 }, {
+                    scrollTrigger: { trigger: element, start: "top 85%", toggleActions: "play none none none" },
+                    opacity: 1, y: 0, duration: 0.8, ease: "power2.out"
+                });
+            });
+        }, 100);
+    </script>
+</body>
+</html>
